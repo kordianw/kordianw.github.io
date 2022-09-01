@@ -312,7 +312,7 @@ function do_backup()
 
   # test archive & print out the files backed-up, other than tmp
   echo "- testing archive..."
-  tar tfvz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
+  tar tfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
 
   # ALSO copy this script itself to TARGET dir
   # -> as a `dl.sh' file
