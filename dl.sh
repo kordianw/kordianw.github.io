@@ -29,7 +29,7 @@ TAR_BACKUP_NAME="example-scripts.tar.gz"
 LOCAL_SRC_RESTORE_DIR="$HOME/src"                                     # Primary
 [ -d "$HOME/playground" ] && LOCAL_SRC_RESTORE_DIR="$HOME/playground" # Secondary (fallback)
 
-REMOTE_RESTORE_TAR_LOCATION="http://www.kordy.com/$TAR_BACKUP_NAME"
+REMOTE_RESTORE_TAR_LOCATION="http://kordy.com/$TAR_BACKUP_NAME"
 REMOTE_TAR_DIR_STRUCTURE="kordy/bin/scripts"
 TAR_EXCLUSIONS="Combined-AHK-Scripts.ahk"
 
