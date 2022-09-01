@@ -305,13 +305,14 @@ function do_backup()
 
   echo && echo "3) FINAL: tar-up & gzip again"
   NON_GZ_TAR_BACKUP_NAME=$(echo $TAR_BACKUP_NAME | sed 's/.gz$//')
-  tar cf "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" * || exit 5
+  tar cf "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" * >/dev/null || exit 5
   rm -f "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" # remove any pre-existing file in prep for the new gzip
   gzip -9v "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" || exit 6
   chmod 644 "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" || exit 7
 
   # test archive & print out the files backed-up, other than tmp
-  tar tfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
+  echo "- testing archive..."
+  tar tfvz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
 
   # ALSO copy this script itself to TARGET dir
   # -> as a `dl.sh' file
