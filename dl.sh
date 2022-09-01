@@ -55,7 +55,8 @@ FAVE_TIMEZONE="America/New_York|US/Eastern"
 #
 # FUNCTIONS
 #
-function set_files_list() {
+function set_files_list()
+{
   # FILES IN SCOPE:
   # - searches both files and symbolic links
   # - searches for scripts files: *.pm *.pl *.sh *.py *.bat *.java *.c *.h
@@ -71,7 +72,8 @@ function set_files_list() {
   fi
 }
 
-function check_sshpass() {
+function check_sshpass()
+{
   # only allow sshpass in certain locations
   WHERE=$(which sshpass)
   [ ! -x "$WHERE" ] && {
@@ -102,7 +104,8 @@ function check_sshpass() {
   fi
 }
 
-function run_ssh() {
+function run_ssh()
+{
   # get params
   CMD=$1
   [ -z "$CMD" ] && {
@@ -150,12 +153,14 @@ function run_ssh() {
   fi
 }
 
-function fmt_ls() {
+function fmt_ls()
+{
   # nicely formatted ls
   echo "-> $(/bin/ls -lho "$1")" | sed 's/ -r[^ ]* //; s/>[0-9] /> /; s/> [0-9] /> /; s/lrwx[^ ]* //; s/> [0-9] /> /;' | awk '{printf "%s %s%5s %s %2s %-5s %s %s %s\n", $1,$2,$3,$4,$5,$6,$7,$8,$9,$10}'
 }
 
-function do_backup() {
+function do_backup()
+{
   # check that target-dir exists
   if [ ! -d "$SERVER_TARGET_PUBLIC_DIR" ]; then
     echo "$(basename $0): backup target dir: <$SERVER_TARGET_PUBLIC_DIR> doesn't exist, nothing to do!" 1>&2
@@ -306,7 +311,7 @@ function do_backup() {
   chmod 644 "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" || exit 7
 
   # test archive & print out the files backed-up, other than tmp
-  tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
+  tar tfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
 
   # ALSO copy this script itself to TARGET dir
   # -> as a `dl.sh' file
@@ -457,7 +462,8 @@ function do_backup() {
   rm -rf /tmp/tmp-bkup-$$
 }
 
-function do_download() {
+function do_download()
+{
   # can't run in this dir
   if pwd | grep -q "$REMOTE_REPOSITORY"; then
     echo "$(basename $0): can't run in this directory - $REMOTE_REPOSITORY - this is the destination, not the src!" 1>&2
@@ -608,7 +614,8 @@ function do_download() {
   fi
 }
 
-function show_differences() {
+function show_differences()
+{
   # swap dirs for the diff read-only function
   [ -e "$LOCAL_SRC_RESTORE_DIR" ] || LOCAL_SRC_RESTORE_DIR="$LOCAL_SCRIPTS_DIR"
 
@@ -653,7 +660,8 @@ function show_differences() {
   done
 }
 
-function do_upload() {
+function do_upload()
+{
   echo "* did you run with \`-diff' to check differences first...?" 1>&2
   sleep 1
 
@@ -797,7 +805,8 @@ function do_upload() {
   fi
 }
 
-function do_update() {
+function do_update()
+{
   echo "* did you run with \`-diff' to check differences first...?" 1>&2
   sleep 1
 
@@ -870,7 +879,8 @@ function do_update() {
   done
 }
 
-function show_conf_differences() {
+function show_conf_differences()
+{
   # check that Config-Files exists
   if [ ! -d "$CONFIG_FILES_DIR" ]; then
     echo "$(basename $0): config-files target dir: <$CONFIG_FILES_DIR> doesn't exist, nothing to do!" 1>&2
@@ -902,7 +912,8 @@ function show_conf_differences() {
   done
 }
 
-function show_script_differences() {
+function show_script_differences()
+{
   # check that target-dir exists
   if [ ! -d "$LOCAL_SRC_RESTORE_DIR" ]; then
     echo "$(basename $0): src/restore src dir: <$LOCAL_SRC_RESTORE_DIR> doesn't exist, nothing to do!" 1>&2
@@ -941,7 +952,8 @@ function show_script_differences() {
   done
 }
 
-function link_strategic_scripts() {
+function link_strategic_scripts()
+{
   # check that target-dir exists
   if [ ! -d "$LOCAL_SRC_RESTORE_DIR" ]; then
     echo "$(basename $0): src/restore src dir: <$LOCAL_SRC_RESTORE_DIR> doesn't exist, nothing to do!" 1>&2
@@ -1062,7 +1074,8 @@ function link_strategic_scripts() {
   done
 }
 
-function do_add_files() {
+function do_add_files()
+{
   # check that target-dir exists
   if [ ! -d "$LOCAL_SRC_RESTORE_DIR" ]; then
     echo "$(basename $0): target/restore src dir: <$LOCAL_SRC_RESTORE_DIR> doesn't exist, nothing to do!" 1>&2
@@ -1139,7 +1152,8 @@ function do_add_files() {
   fi
 }
 
-function do_add_from_remote() {
+function do_add_from_remote()
+{
   # check that target-dir exists
   if [ ! -d "$LOCAL_SRC_RESTORE_DIR" ]; then
     echo "$(basename $0): target/restore src dir: <$LOCAL_SRC_RESTORE_DIR> doesn't exist, nothing to do!" 1>&2
@@ -1170,7 +1184,8 @@ function do_add_from_remote() {
   run_ssh scp -o StrictHostKeyChecking=no "$UPLOAD_MASTER_DEST/$PATTERN" $TARGET
 }
 
-function gen_full_remote() {
+function gen_full_remote()
+{
   # check that target-dir exists
   if [ ! -d "$LOCAL_SRC_RESTORE_DIR" ]; then
     echo "$(basename $0): target/restore src dir: <$LOCAL_SRC_RESTORE_DIR> doesn't exist, nothing to do!" 1>&2
@@ -1187,7 +1202,8 @@ function gen_full_remote() {
   fi
 }
 
-function do_setup() {
+function do_setup()
+{
   ORIG_PWD=$PWD
 
   # if we're in home and not in src, then set up ~/src
