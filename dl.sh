@@ -1467,6 +1467,9 @@ elif echo $0 | egrep -q 'dl.sh|k-dl-sh|kw-dl-sh'; then
 elif [ -L "$0" -a "$PWD" = "$HOME" -a ! -e ./src/Config-Files -a ! -e ./src/Shell-Tools ]; then
   echo "<--> assuming: $0 -setup" >&2
   do_setup
+elif [ "$PWD" = "$HOME" -a ! -e ./src -a ! -e ./bin -a $(ls | wc -l) -eq 1 ]; then
+  echo "<--> assuming: $0 -setup" >&2
+  do_setup
 elif [ -L "$0" -a "$PWD" = "$HOME" -a -e ./src/Config-Files -a -e ./src/Shell-Tools -a -r ./src/$SCRIPT_NAME ]; then
   echo "<--> assuming: $0 -dlupd" >&2
   do_download
