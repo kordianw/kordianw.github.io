@@ -1,0 +1,6 @@
+*.html binary
+*.gz binary
+*.tar.gz binary
+*.gpg binary
+*.png binary
+*.jpg binary
