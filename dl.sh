@@ -305,7 +305,7 @@ function do_backup()
 
   echo && echo "3) FINAL: tar-up & gzip again"
   NON_GZ_TAR_BACKUP_NAME=$(echo $TAR_BACKUP_NAME | sed 's/.gz$//')
-  tar cf "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" * >/dev/null || exit 5
+  tar cf "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" * || exit 5
   rm -f "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" # remove any pre-existing file in prep for the new gzip
   gzip -9v "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" || exit 6
   chmod 644 "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" || exit 7
@@ -313,7 +313,7 @@ function do_backup()
   # test archive & print out the files backed-up, other than tmp
   echo "- testing archive..."
   #tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
-  tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort | xargs dirname | sort -u
+  tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort | xargs dirname | sort -u | grep -v "^\.$"
 
   # ALSO copy this script itself to TARGET dir
   # -> as a `dl.sh' file
@@ -1393,7 +1393,7 @@ function do_setup()
           echo "... timezone set to: $FAVE_TIMEZONE" >&/dev/null
         else
           TZ_CHANGE_NEEDED=1
-          echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -TZ   [currently set to: $TZ]"
+          echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -TZ      [currently set to: $TZ]"
         fi
       else
         TZ_CHANGE_NEEDED=1
@@ -1405,7 +1405,7 @@ function do_setup()
         TZ=$(unset TZ && sudo -in date >&/dev/null)
         [ -z "$TZ" ] && TZ=$(unset TZ && date)
         if echo "$TZ" | grep -q UTC; then
-          echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -TZ   [currently set to: UTC]"
+          echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -TZ      [currently set to: UTC]"
         fi
       fi
     else
