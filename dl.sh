@@ -267,15 +267,22 @@ function do_backup()
   echo "* Step 2 of 4: adding certain key files (SSH keys, etc) to the tar..."
   tar --exclude-from /tmp/exclude-patterns-$$.tmp -rvf "/tmp/tmp-$$.tar" \
     $LOCAL_SCRIPTS_DIR/$(basename $0) \
-    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.??* \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.bash_profile \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.zshrc \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.vimrc \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.screenrc \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.tmux.conf \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.gitignore \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.gitconfig \
     $LOCAL_SCRIPTS_DIR/HW-Info/hw-info* \
-    $LOCAL_SCRIPTS_DIR/Shell-Tools/*setup* \
+    $LOCAL_SCRIPTS_DIR/Shell-Tools/setup* \
     $LOCAL_SCRIPTS_DIR/Shell-Tools/ip-location* \
     $LOCAL_SCRIPTS_DIR/Shell-Tools/*test* \
     $LOCAL_SCRIPTS_DIR/CommonFuncs.pm \
     ~/.ssh/*key*pub
 
   # can add these (end with \):
+  #$LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.??* 
   #~/.ssh/*aws*pem \
 
   # check tar status
@@ -291,7 +298,7 @@ function do_backup()
 
   # temporarily move the whole set of backed-up files to a temp dir
   echo "* Step 4 of 4: reconstructing the tar file..."
-  mkdir /tmp/tmp-bkup-$$ && cd /tmp/tmp-bkup-$$ && tar xvf ../tmp-$$.tar || exit 2
+  mkdir /tmp/tmp-bkup-$$ && cd /tmp/tmp-bkup-$$ && tar xf ../tmp-$$.tar || exit 2
 
   DATE=$(date "+%Y%m%d")
   echo && echo "2) rename to current dates"
