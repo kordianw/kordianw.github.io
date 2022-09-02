@@ -5,13 +5,15 @@
 #
 # **** Quick Start on a new machine:
 # $ wget http://kordy.com/dl.sh && bash dl.sh
-# $ curl -sSL http://kordy.com/dl.sh -o dl.sh && bash dl.sh
+# $ curl -sS http://kordy.com/dl.sh -o dl.sh && bash dl.sh
 #
 ##############################################################################################################
 #
 # NOTE: script can be downloaded from: https://kordy.com/dl.sh /or/ << https://tinyurl.com/k-dl-sh >>
 #
 # HW-INFO: # curl -Ss https://raw.githubusercontent.com/kordianw/HW-Info/master/hw-info.sh | bash
+#
+# PS: Manual location of tar.gpg: https://github.com/kordianw/kordianw.github.io/raw/master/example-scripts.tar.gz.gpg
 #
 #
 # * By Kordian Witek <code [at] kordy.com>, Jan 2019
@@ -522,14 +524,16 @@ function do_download() {
   else
     rm -f dl/$TAR_BACKUP_NAME 2>/dev/null
     if ! which wget >&/dev/null; then
-      timeout 15 curl -so "$TAR_BACKUP_NAME.gpg" $REMOTE_RESTORE_TAR_LOCATION.gpg
+      timeout 15 curl -sS -o "$TAR_BACKUP_NAME.gpg" $REMOTE_RESTORE_TAR_LOCATION.gpg
+      RC=$?
     else
-      timeout 15 wget -4 -o /dev/null --no-cache $REMOTE_RESTORE_TAR_LOCATION.gpg
+      timeout 15 wget -4 -q --no-cache $REMOTE_RESTORE_TAR_LOCATION.gpg
+      RC=$?
     fi
 
     # was the DL successful?
-    if [ $? -ne 0 ]; then
-      echo "--FATAL: download of \"$REMOTE_RESTORE_TAR_LOCATION.gpg\" failed with RC=$?!" >&2
+    if [ $RC -ne 0 ]; then
+      echo "--FATAL: download of \"$REMOTE_RESTORE_TAR_LOCATION.gpg\" failed with RC=$RC!" >&2
       exit 99
     fi
 
