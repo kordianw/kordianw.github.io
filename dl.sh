@@ -32,6 +32,7 @@ LOCAL_SRC_RESTORE_DIR="$HOME/src"                                     # Primary
 [ -d "$HOME/playground" ] && LOCAL_SRC_RESTORE_DIR="$HOME/playground" # Secondary (fallback)
 
 REMOTE_RESTORE_TAR_LOCATION="http://kordy.com/$TAR_BACKUP_NAME"
+ALT_REMOTE_RESTORE_TAR_LOCATION="https://github.com/kordianw/kordianw.github.io/raw/master/$TAR_BACKUP_NAME"
 REMOTE_TAR_DIR_STRUCTURE="kordy/bin/scripts"
 TAR_EXCLUSIONS="Combined-AHK-Scripts.ahk"
 
@@ -531,6 +532,14 @@ function do_download() {
       RC=$?
     fi
 
+    # try again - was the DL successful?
+    if [ $RC -ne 0 ]; then
+      echo "--ALMOST-FATAL: download of \"$REMOTE_RESTORE_TAR_LOCATION.gpg\" failed with RC=$RC!" >&2
+      echo "<*> retrying with alt-location: $ALT_REMOTE_RESTORE_TAR_LOCATION.gpg" >&2
+      timeout 15 wget -4 -q --no-cache $ALT_REMOTE_RESTORE_TAR_LOCATION.gpg
+      RC=$?
+    fi
+
     # was the DL successful?
     if [ $RC -ne 0 ]; then
       echo "--FATAL: download of \"$REMOTE_RESTORE_TAR_LOCATION.gpg\" failed with RC=$RC!" >&2
@@ -541,7 +550,11 @@ function do_download() {
     mv "$TAR_BACKUP_NAME.gpg" dl || exit 2
   fi
 
-  [ -s "dl/$TAR_BACKUP_NAME.gpg" ] || exit 3
+  if [ ! -s "dl/$TAR_BACKUP_NAME.gpg" ]; then
+    echo "--FATAL: download of \"$REMOTE_RESTORE_TAR_LOCATION.gpg\" failed - EMPTY FILE!" >&2
+    rm -f "dl/$TAR_BACKUP_NAME.gpg"
+    exit 3
+  fi
   cd dl >&/dev/null || exit 3
 
   # unencrypt
@@ -1333,7 +1346,7 @@ function do_setup() {
 
     # create a link in HOME
     cd >&/dev/null
-    [ -d src -a -s ./src/$SCRIPT_NAME ] && ln -s ./src/$SCRIPT_NAME
+    [ -d src -a -s ./src/$SCRIPT_NAME -a ! -L $SCRIPT_NAME ] && ln -s ./src/$SCRIPT_NAME
     [ -d playground -a -s ./playground/$SCRIPT_NAME ] && ln -s ./playground/$SCRIPT_NAME
     cd - >&/dev/null
   fi
