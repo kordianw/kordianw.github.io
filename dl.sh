@@ -1462,22 +1462,6 @@ elif [ "$1" = "-add" -o "$1" = "-add_files" ]; then
   do_add_files $2
 elif [ "$1" = "-setup" ]; then
   do_setup
-elif echo $0 | egrep -q 'dl.sh|k-dl-sh|kw-dl-sh'; then
-  echo "<--> assuming: $0 -setup" >&2
-  do_setup
-elif [ -L "$0" -a "$PWD" = "$HOME" -a ! -e ./src/Config-Files -a ! -e ./src/Shell-Tools ]; then
-  echo "<--> assuming: $0 -setup" >&2
-  do_setup
-elif [ "$PWD" = "$HOME" -a ! -e ./src -a ! -e ./bin -a $(ls | wc -l) -eq 1 ]; then
-  echo "<--> assuming: $0 -setup" >&2
-  do_setup
-elif [ -L "$0" -a "$PWD" = "$HOME" -a -e ./src/Config-Files -a -e ./src/Shell-Tools -a -r ./src/$SCRIPT_NAME ]; then
-  echo "<--> assuming: $0 -dlupd" >&2
-  do_download
-  echo && echo "- showing diffs:"
-  show_differences $2
-  echo && echo "- doing update:"
-  do_update $2
 elif [ "$1" = "-add_from_remote" -o "$1" = "-add_remote" -o "$1" = "-dl_remote" -o "$1" = "-add_dl" ]; then
   do_add_from_remote $2 $3
 elif [ "$1" = "-gen_full_remote" -o "$1" = "-gen_full" ]; then
@@ -1488,6 +1472,26 @@ elif [ "$1" = "-diff_scripts" -o "$1" = "-diff-scripts" -o "$1" = "-diff_src" ];
   show_script_differences
 elif [ "$1" = "-link_scripts" -o "$1" = "-link-scripts" -o "$1" = "-link_src" -o "$1" = "-link" -o "$1" = "-link-script" -o "$1" = "-link_script" ]; then
   link_strategic_scripts $2
+elif [ $# -eq 0 ]; then
+  if echo $0 | egrep -q 'dl.sh|k-dl-sh|kw-dl-sh'; then
+    echo "<--> assuming: $0 -setup [via dl.sh]" >&2
+    do_setup
+  elif [ -L "$0" -a "$PWD" = "$HOME" -a ! -e ./src/Config-Files -a ! -e ./src/Shell-Tools ]; then
+    echo "<--> assuming: $0 -setup [1st-time setup]" >&2
+    do_setup
+  elif [ "$PWD" = "$HOME" -a ! -e ./src -a ! -e ./bin -a $(ls | wc -l) -eq 1 ]; then
+      echo "<--> assuming: $0 -setup [empty-dir setup]" >&2
+    do_setup
+  elif [ -L "$0" -a "$PWD" = "$HOME" -a -e ./src/Config-Files -a -e ./src/Shell-Tools -a -r ./src/$SCRIPT_NAME ]; then
+    echo "<--> assuming: $0 -dlupd [update, via link]" >&2
+    do_download
+    echo && echo "- showing diffs:"
+    show_differences $2
+    echo && echo "- doing update:"
+    do_update $2
+  else
+    exec $0 --help
+  fi
 else
   UPLOAD_MASTER_DEST="$REMOTE_SERVER:$REMOTE_REPOSITORY"
 
