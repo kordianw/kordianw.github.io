@@ -76,7 +76,7 @@ function set_files_list() {
 
 function check_sshpass() {
   # only allow sshpass in certain locations
-  WHERE=$(which sshpass)
+  WHERE=$(command -v sshpass)
   [ ! -x "$WHERE" ] && {
     echo "--FATAL: not allowing sshpass << $WHERE >> to be non-executable!" >&2
     exit 9
@@ -122,7 +122,7 @@ function run_ssh() {
     exit 2
   }
 
-  if which sshpass >&/dev/null; then
+  if command -v sshpass >&/dev/null; then
     check_sshpass
 
     # get password if not already there
@@ -345,7 +345,7 @@ function do_backup() {
   #
   # encrypt via gpg
   #
-  if ! which gpg >&/dev/null; then
+  if ! command -v gpg >&/dev/null; then
     echo "--FATAL: no gpg binary found on this system - can't encrypt the backup!" >&2
     echo "**NB**: please install \`gpg', eg run:" >&2
 
@@ -476,7 +476,7 @@ function do_download() {
     exit 99
   fi
 
-  if ! which gpg >&/dev/null; then
+  if ! command -v gpg >&/dev/null; then
     echo "--FATAL: no gpg binary found on this system - won't be able to decrypt the backup!" >&2
     echo "**NB**: please install \`gpg', eg:" >&2
 
@@ -524,7 +524,7 @@ function do_download() {
     mv "./$TAR_BACKUP_NAME.gpg" dl || exit 2
   else
     rm -f dl/$TAR_BACKUP_NAME 2>/dev/null
-    if ! which wget >&/dev/null; then
+    if ! command -v wget >&/dev/null; then
       timeout 15 curl -sS -o "$TAR_BACKUP_NAME.gpg" $REMOTE_RESTORE_TAR_LOCATION.gpg
       RC=$?
     else
@@ -588,7 +588,7 @@ function do_download() {
   rm -f $TAR_BACKUP_NAME.gpg
 
   # tar not installed?!
-  if ! which tar >&/dev/null; then
+  if ! command -v tar >&/dev/null; then
     echo "*** trying to install \`tar'!" >&2
     [ -x /usr/bin/yum -a ! -x /bin/tar ] && yum -y -qq install tar
     [ -x /usr/bin/apt -a ! -x /bin/tar ] && apt-get install -y tar
@@ -724,7 +724,7 @@ function do_upload() {
           DONE="yes"
 
           # PRE-FETCH SSH PASSWORD
-          if which sshpass >&/dev/null; then
+          if command -v sshpass >&/dev/null; then
             check_sshpass
 
             # get password if not already there
@@ -781,7 +781,7 @@ function do_upload() {
           DONE="yes"
 
           # PRE-FETCH SSH PASSWORD
-          if which sshpass >&/dev/null; then
+          if command -v sshpass >&/dev/null; then
             # get password if not already there
             if [ -z "$SSHPASS" ]; then
               echo -e "   ... Enter password for \"$UPLOAD_MASTER_DEST\": \c" 1>&2
@@ -1395,7 +1395,7 @@ function do_setup() {
     # TZ
     [ -r /etc/timezone -a -s /etc/timezone ] && TZ=$(cat /etc/timezone)
     [ -z "$TZ" ] && TZ=$(ls -l /etc/localtime 2>/dev/null | grep zoneinfo | sed 's/.*zoneinfo\/\(.*\)$/\1/')
-    if [ "$EUID" -eq 0 ] || which sudo >&/dev/null; then
+    if [ "$EUID" -eq 0 ] || command -v sudo >&/dev/null; then
       if [ -n "$TZ" ]; then
         if echo "$TZ" | egrep -q "$FAVE_TIMEZONE"; then
           echo "... timezone set to: $FAVE_TIMEZONE" >&/dev/null
@@ -1431,7 +1431,7 @@ function do_setup() {
     fi
 
     # INSTALL PACKAGES
-    if [ "$EUID" -eq 0 ] || which sudo >&/dev/null; then
+    if [ "$EUID" -eq 0 ] || command -v sudo >&/dev/null; then
       [ -x /usr/bin/apt ] && echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -SSH_CONF    [uses \`apt']"
       [ "$HOST" = "localhost" -o "$(uname -n 2>/dev/null)" = "localhost" ] && echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -HOSTNAME    [currently set to $(uname -n)]"
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -GENPKG"
