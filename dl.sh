@@ -92,13 +92,13 @@ function check_sshpass() {
     }
 
     # linux
-    if ! echo "$WHERE" | egrep -q '^/usr/bin/sshpass$'; then
+    if ! egrep -q '^/usr/bin/sshpass$' <<<$WHERE; then
       echo "--FATAL: not allowing sshpass << $WHERE >> to be in this path on $OSTYPE!" >&2
       exit 9
     fi
   else
     # darwin
-    if ! echo "$WHERE" | egrep -q '^/usr/local/bin/sshpass$'; then
+    if ! egrep -q '^/usr/local/bin/sshpass$' <<<$WHERE; then
       echo "--FATAL: not allowing sshpass << $WHERE >> to be in this path on $OSTYPE!" >&2
       exit 9
     fi
@@ -166,7 +166,7 @@ function do_backup() {
   fi
 
   # make sure we have the password file
-  PASS_FILE="$(echo $0 | sed 's/\.[a-z][a-z]*$//')-pass.txt"
+  PASS_FILE="$(sed 's/\.[a-z][a-z]*$//' <<<$0)-pass.txt"
   if [ ! -s "$PASS_FILE" ]; then
     echo "***" >&2
     echo "*** $(basename $0): No Password File! In order to protect the backup, please create a password file: $PASS_FILE" >&2
@@ -198,7 +198,7 @@ function do_backup() {
       if [ $DAY -lt 5 -a $MONTH -eq 1 ]; then
         MONTH=12
       elif [ $DAY -lt 10 -a $MONTH -gt 1 ]; then
-        MONTH=$(echo $MONTH | sed 's/^0//')
+        MONTH=$(sed 's/^0//' <<<$MONTH)
         MONTH=$(($MONTH - 1))
         [ $MONTH -lt 10 ] && MONTH="0$MONTH"
       fi
@@ -309,7 +309,7 @@ function do_backup() {
   #
 
   echo && echo "3) FINAL: tar-up & gzip again"
-  NON_GZ_TAR_BACKUP_NAME=$(echo $TAR_BACKUP_NAME | sed 's/.gz$//')
+  NON_GZ_TAR_BACKUP_NAME=$(sed 's/.gz$//' <<<$TAR_BACKUP_NAME)
   tar cf "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" * || exit 5
   rm -f "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" # remove any pre-existing file in prep for the new gzip
   gzip -9v "$SERVER_TARGET_PUBLIC_DIR/$NON_GZ_TAR_BACKUP_NAME" || exit 6
@@ -358,7 +358,7 @@ function do_backup() {
     exit 99
   fi
 
-  PASS_FILE="$(echo $0 | sed 's/\.[a-z][a-z]*$//')-pass.txt"
+  PASS_FILE="$(sed 's/\.[a-z][a-z]*$//' <<<$0)-pass.txt"
   if [ ! -s "$PASS_FILE" ]; then
     echo "No Password File! In order to protect the files, please create a password file: $PASS_FILE" >&2
     exit 9
@@ -458,7 +458,7 @@ function do_backup() {
   ####################################################
 
   # make the pass file be the same as main file
-  PASS_FILE="$(echo $0 | sed 's/\.[a-z][a-z]*$//')-pass.txt"
+  PASS_FILE="$(sed 's/\.[a-z][a-z]*$//' <<<$0)-pass.txt"
   if [ -r $PASS_FILE ]; then
     touch -r "$0" "$PASS_FILE"
     chmod 600 "$PASS_FILE"
@@ -627,7 +627,7 @@ function do_download() {
   fi
 
   # make the pass file be the same as main file
-  PASS_FILE="$(echo $0 | sed 's/\.[a-z][a-z]*$//')-pass.txt"
+  PASS_FILE="$(sed 's/\.[a-z][a-z]*$//' <<<$0)-pass.txt"
   if [ -r $PASS_FILE ]; then
     touch -r "$0" "$PASS_FILE"
     chmod 600 "$PASS_FILE"
@@ -669,7 +669,7 @@ function show_differences() {
         sleep 1
         vimdiff -R -c ":set number" -c "cmap q qa" -c "set viminfo='0" "$a" "$LAST"
       fi
-    elif [ $(echo "$a" | grep -c "/") -eq 0 ]; then
+    elif [ $(grep -c "/" <<<$a) -eq 0 ]; then
       if [ -L "$a" ]; then
         echo "*** Symbolic LINK \"$a\" is NOT TRACKED..."
       else
@@ -770,7 +770,7 @@ function do_upload() {
           fi
         fi
       fi
-    elif [ $(echo "$a" | grep -c "/") -eq 0 ]; then
+    elif [ $(grep -c "/" <<<$a) -eq 0 ]; then
       if [ ! -L "$a" ]; then
         PARENT="/$(dirname "$a")"
         [ "$PARENT" = "/." ] && PARENT=""
@@ -989,7 +989,7 @@ function link_strategic_scripts() {
   # - if we do have just one match, don't bother asking for conf
   if [ -n "$1" ]; then
     if [ -n "$FILES_LIST" ]; then
-      if echo $FILES_LIST | grep -q "^[A-Za-z0-9\/\._-]*$"; then
+      if grep -q "^[A-Za-z0-9\/\._-]*$" <<<$FILES_LIST; then
         ONE_MATCH=1
       fi
     else
@@ -1051,8 +1051,8 @@ function link_strategic_scripts() {
 
       # what is the target dir?
       TARGET_DIR=$LOCAL_SCRIPTS_DIR
-      if echo "$a" | grep -q "Config-Files"; then
-        if echo "$a" | egrep -q 'conf|rc|profile'; then
+      if grep -q "Config-Files" <<<$a; then
+        if egrep -q 'conf|rc|profile' <<<$a; then
           TARGET_DIR=$HOME
         fi
       fi
@@ -1080,7 +1080,7 @@ function link_strategic_scripts() {
         }
 
         # add +x if not there
-        if echo "$a" | egrep -q 'sh$|pl$|py$|cgi$'; then
+        if egrep -q 'sh$|pl$|py$|cgi$' <<<$a; then
           chmod -f +x "$TARGET_DIR/$(basename $a)"
         fi
       fi
@@ -1115,7 +1115,7 @@ function do_add_files() {
   # - if we do have just one match, don't bother asking for conf
   if [ -n "$1" ]; then
     if [ -n "$FILES_LIST" ]; then
-      if echo $FILES_LIST | grep -q "^[A-Za-z0-9\/\._-]*$"; then
+      if grep -q "^[A-Za-z0-9\/\._-]*$" <<<$FILES_LIST; then
         ONE_MATCH=1
       fi
     else
@@ -1137,7 +1137,7 @@ function do_add_files() {
 
       if [ "$CONF" = "y" -o "$CONF" = "Y" ]; then
         # create a parent dir if it doesn't exist...
-        if echo "$a" | grep -q "/"; then
+        if grep -q "/" <<<$a; then
           mkdir "$LOCAL_SRC_RESTORE_DIR/$(dirname $a)" >&/dev/null
         fi
 
@@ -1150,7 +1150,7 @@ function do_add_files() {
         }
 
         # add +x if not there
-        if echo "$a" | egrep -q 'sh$|pl$|py$|cgi$'; then
+        if egrep -q 'sh$|pl$|py$|cgi$' <<<$a; then
           chmod -f +x "$LAST/$(basename $a)"
         fi
       fi
@@ -1160,7 +1160,7 @@ function do_add_files() {
   done
 
   # change back to original dir
-  if echo "$PWD" | grep -q "dl/home"; then
+  if grep -q "dl/home" <<<$PWD; then
     cd - >&/dev/null
   fi
 }
@@ -1185,7 +1185,7 @@ function do_add_from_remote() {
   #
 
   PATTERN="*$1*"
-  if echo "$1" | grep -q '\*'; then
+  if grep -q '\*' <<<$1; then
     PATTERN="$1"
   fi
 
@@ -1217,7 +1217,7 @@ function do_setup() {
   ORIG_PWD=$PWD
 
   # if we're in home and not in src, then set up ~/src
-  if ! echo $PWD | grep -q src; then
+  if ! grep -q src <<<$PWD; then
     if [ "$PWD" = "$HOME" ]; then
       echo && echo "- INITIAL SETUP: setting up main src dir: $HOME/src:" 1>&2
       chmod 755 $0 >&/dev/null
@@ -1357,7 +1357,7 @@ function do_setup() {
     echo && echo "- now finalize via the following commands:"
 
     SRC_PREFIX=""
-    if echo "$FROM_NAME" | grep -q "\.\."; then
+    if grep -q "\.\." <<<$FROM_NAME; then
       SRC_PREFIX="/$(basename $LOCAL_SRC_RESTORE_DIR)"
     fi
     if [ ! -e ".$SRC_PREFIX/Shell-Tools" ]; then
@@ -1397,7 +1397,7 @@ function do_setup() {
     [ -z "$TZ" ] && TZ=$(ls -l /etc/localtime 2>/dev/null | grep zoneinfo | sed 's/.*zoneinfo\/\(.*\)$/\1/')
     if [ "$EUID" -eq 0 ] || command -v sudo >&/dev/null; then
       if [ -n "$TZ" ]; then
-        if echo "$TZ" | egrep -q "$FAVE_TIMEZONE"; then
+        if egrep -q "$FAVE_TIMEZONE" <<<$TZ; then
           echo "... timezone set to: $FAVE_TIMEZONE" >&/dev/null
         else
           TZ_CHANGE_NEEDED=1
@@ -1412,7 +1412,7 @@ function do_setup() {
       if [ -z "$TZ_CHANGE_NEEDED" ]; then
         TZ=$(unset TZ && sudo -in date >&/dev/null)
         [ -z "$TZ" ] && TZ=$(unset TZ && date)
-        if echo "$TZ" | grep -q UTC; then
+        if grep -q UTC <<<$TZ; then
           echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -TZ      [currently set to: UTC]"
         fi
       fi
@@ -1424,7 +1424,7 @@ function do_setup() {
     fi
 
     # DYNAMIC DNS
-    if echo $HOST | egrep -q "^gcp-|^ec2-|^az-|^cs-.*default"; then
+    if egrep -q "^gcp-|^ec2-|^az-|^cs-.*default" <<<$HOST; then
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-aws-gcp.sh -dyn_dns   [can be done automatically via setup-aws-gcp.sh]"
     elif [ -n "$DEVSHELL_SERVER_URL" -o -n "$DEVSHELL_SERVER_BASE_URL" ]; then
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-aws-gcp.sh -dyn_dns"
@@ -1473,7 +1473,7 @@ elif [ "$1" = "-diff_scripts" -o "$1" = "-diff-scripts" -o "$1" = "-diff_src" ];
 elif [ "$1" = "-link_scripts" -o "$1" = "-link-scripts" -o "$1" = "-link_src" -o "$1" = "-link" -o "$1" = "-link-script" -o "$1" = "-link_script" ]; then
   link_strategic_scripts $2
 elif [ $# -eq 0 ]; then
-  if echo $0 | egrep -q 'dl.sh|k-dl-sh|kw-dl-sh'; then
+  if egrep -q 'dl.sh|k-dl-sh|kw-dl-sh' <<<$0; then
     echo "<--> assuming: $0 -setup [via dl.sh]" >&2
     do_setup
   elif [ -L "$0" -a "$PWD" = "$HOME" -a ! -e ./src/Config-Files -a ! -e ./src/Shell-Tools ]; then
