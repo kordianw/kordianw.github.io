@@ -227,7 +227,7 @@ function do_backup() {
   #### - contains a list of filemasks to backup
   #### NOTE: ensure that you end the last item with \
   ############################################################################################################################
-  echo "* Step 1 of 4: creating initial tar file..."
+  echo "* Step 1 of 3: creating initial tar file..."
   tar --newer-mtime="$YEAR-$MONTH-01 00:00:00" --exclude-from /tmp/exclude-patterns-$$.tmp -cvf "/tmp/tmp-$$.tar" \
     $LOCAL_SCRIPTS_DIR/*.pl \
     $LOCAL_SCRIPTS_DIR/*.pm \
@@ -262,7 +262,7 @@ function do_backup() {
   # certain files should ALWAYS be added
   # -r: add to an existing tar
   # NB: AWS, GCP, Azure cloud keys - for AWS, allow private-key, for the rest, just PUB keys
-  echo "* Step 2 of 4: adding certain key files (SSH keys, etc) to the tar..."
+  echo "* Step 2 of 3: adding certain key files (SSH keys, etc) to the tar..."
   tar --exclude-from /tmp/exclude-patterns-$$.tmp -rvf "/tmp/tmp-$$.tar" \
     $LOCAL_SCRIPTS_DIR/$(basename $0) \
     $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.bash_profile \
@@ -295,7 +295,7 @@ function do_backup() {
   rm -f /tmp/exclude-patterns-$$.tmp
 
   # temporarily move the whole set of backed-up files to a temp dir
-  echo "* Step 4 of 4: reconstructing the tar file..."
+  echo "* Step 3 of 3: reconstructing the tar file..."
   mkdir /tmp/tmp-bkup-$$ && cd /tmp/tmp-bkup-$$ && tar xf ../tmp-$$.tar || exit 2
 
   DATE=$(date "+%Y%m%d")
