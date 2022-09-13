@@ -1366,7 +1366,7 @@ function do_setup() {
     fi
 
     # when during the original setup
-    if [ -n "$ORIG_PWD" -a "$ORIG_PWD" = "$HOME" -a -r "$SCRIPT_NAME" ]; then
+    if [ -n "$ORIG_PWD" -a "$ORIG_PWD" = "$HOME" -a -r "$HOME/$SCRIPT_NAME" ]; then
       SRC_PREFIX="/src"
     fi
 
@@ -1436,6 +1436,9 @@ function do_setup() {
       [ "$HOST" = "localhost" -o "$(uname -n 2>/dev/null)" = "localhost" ] && echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -HOSTNAME    [currently set to $(uname -n)]"
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -GENPKG"
     fi
+
+    # suggest: perf test
+    echo "-> test performance: .$SRC_PREFIX/Shell-Tools/test-system-speed.sh -cpumark"
   fi
 }
 
