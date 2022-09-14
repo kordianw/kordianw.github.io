@@ -1469,7 +1469,7 @@ elif [ "$1" = "-add_from_remote" -o "$1" = "-add_remote" -o "$1" = "-dl_remote" 
   do_add_from_remote $2 $3
 elif [ "$1" = "-gen_full_remote" -o "$1" = "-gen_full" ]; then
   gen_full_remote
-elif [ "$1" = "-diff_conf" -o "$1" = "-diff-config" -o "$1" = "-diff_config" ]; then
+elif [ "$1" = "-diff_conf" -o "$1" = "-diff-conf" -o "$1" = "-diff-config" -o "$1" = "-diff_config" ]; then
   show_conf_differences
 elif [ "$1" = "-diff_scripts" -o "$1" = "-diff-scripts" -o "$1" = "-diff_src" ]; then
   show_script_differences
