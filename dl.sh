@@ -1390,6 +1390,9 @@ function do_setup() {
     # add-user
     if [ "$WHOAMI" = "root" -o "$WHOAMI" = "ubuntu" -o "$WHOAMI" = "ec2-user" ]; then
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh -USER <user>"
+
+      # make a link to the home
+      ln -s .$SRC_PREFIX/Shell-Tools/setup-linux-system.sh $HOME/ >&/dev/null
     fi
 
     # TZ
