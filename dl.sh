@@ -525,11 +525,21 @@ function do_download() {
   else
     rm -f dl/$TAR_BACKUP_NAME 2>/dev/null
     if ! command -v wget >&/dev/null; then
-      timeout 15 curl -sS -o "$TAR_BACKUP_NAME.gpg" $REMOTE_RESTORE_TAR_LOCATION.gpg
-      RC=$?
+      if command -v timeout >&/dev/null; then
+        timeout 15 curl -sS -o "$TAR_BACKUP_NAME.gpg" $REMOTE_RESTORE_TAR_LOCATION.gpg
+        RC=$?
+      else
+        curl -sS -o "$TAR_BACKUP_NAME.gpg" $REMOTE_RESTORE_TAR_LOCATION.gpg
+        RC=$?
+      fi
     else
-      timeout 15 wget -4 -q --no-cache -o /dev/null $REMOTE_RESTORE_TAR_LOCATION.gpg
-      RC=$?
+      if command -v timeout >&/dev/null; then
+        timeout 15 wget -4 -q --no-cache -o /dev/null $REMOTE_RESTORE_TAR_LOCATION.gpg
+        RC=$?
+      else
+        wget -4 -q --no-cache -o /dev/null $REMOTE_RESTORE_TAR_LOCATION.gpg
+        RC=$?
+      fi
     fi
 
     # try again - was the DL successful?
