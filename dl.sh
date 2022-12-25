@@ -546,8 +546,13 @@ function do_download() {
     if [ $RC -ne 0 ]; then
       echo "--ALMOST-FATAL: download of \"$REMOTE_RESTORE_TAR_LOCATION.gpg\" failed with RC=$RC!" >&2
       echo "<*> retrying with alt-location: $ALT_REMOTE_RESTORE_TAR_LOCATION.gpg" >&2
-      timeout 15 wget -4 -q --no-cache -o /dev/null $ALT_REMOTE_RESTORE_TAR_LOCATION.gpg
-      RC=$?
+      if command -v timeout >&/dev/null; then
+        timeout 15 wget -4 -q --no-cache -o /dev/null $ALT_REMOTE_RESTORE_TAR_LOCATION.gpg
+        RC=$?
+      else
+        wget -4 -q --no-cache -o /dev/null $ALT_REMOTE_RESTORE_TAR_LOCATION.gpg
+        RC=$?
+      fi
     fi
 
     # was the DL successful?
