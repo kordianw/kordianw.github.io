@@ -272,6 +272,7 @@ function do_backup() {
     $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.tmux.conf \
     $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.gitignore \
     $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.gitconfig \
+    $LOCAL_SCRIPTS_DIR/$CONFIG_FILES_DIR/.ssh/config \
     $LOCAL_SCRIPTS_DIR/HW-Info/hw-info* \
     $LOCAL_SCRIPTS_DIR/Shell-Tools/setup* \
     $LOCAL_SCRIPTS_DIR/Shell-Tools/ip-location* \
