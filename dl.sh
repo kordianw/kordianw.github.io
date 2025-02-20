@@ -1512,7 +1512,10 @@ elif [ $# -eq 0 ]; then
     echo && echo "- doing update:"
     do_update $2
   else
-    exec $0 --help
+    #exec $0 --help
+    # exec not available on latest MacOS builds
+    $0 --help
+    exit $?
   fi
 else
   UPLOAD_MASTER_DEST="$REMOTE_SERVER:$REMOTE_REPOSITORY"
