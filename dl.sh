@@ -68,9 +68,9 @@ function set_files_list() {
   TYPES_OF_FILES='-type f -o -type l'
 
   if [ -n "$1" ]; then
-    FILES_LIST=$(find . -maxdepth 2 \( $TYPES_OF_FILES \) \( -iname "*.pm" -o -iname "*.pl" -o -iname "*.sh" -o -iname "*.py" -o -iname "*.bat" -o -iname "*.java" -o -iname "*.c" -o -iname "*.h" -o -iname "*.json*" -o -iname "*.yml" -o -iname "*.yaml" -o -iname "*.txt" -o -iname "*.md" -o -iname ".*rc*" -o -iname "*conf*" -o -iname "*profile*" -o -iname "*.local*" -o -iname "*.ini" -o -iname "*.cfg" -o -iname "Dockerfile" -o -iname "Makefile" -o -iname "requirements.txt" -o -iname "Readme.md" \) | egrep -v "$FILE_EXCLUSIONS" | sort -f | sed 's/^.\///' | egrep -i "$1")
+    FILES_LIST=$(find . -maxdepth 2 \( $TYPES_OF_FILES \) \( -iname "*.pm" -o -iname "*.pl" -o -iname "*.sh" -o -iname "*.py" -o -iname "*.bat" -o -iname "*.java" -o -iname "*.c" -o -iname "*.h" -o -iname "*.json*" -o -iname "*.yml" -o -iname "*.yaml" -o -iname "*.txt" -o -iname "*.md" -o -iname ".*rc*" -o -iname "*conf*" -o -iname "*profile*" -o -iname "*.local*" -o -iname "*.ini" -o -iname "*.cfg" -o -iname "Dockerfile" -o -iname "Makefile" -o -iname "requirements.txt" -o -iname "Readme.md" \) | grep -E -v "$FILE_EXCLUSIONS" | sort -f | sed 's/^.\///' | grep -E -i "$1")
   else
-    FILES_LIST=$(find . -maxdepth 2 \( $TYPES_OF_FILES \) \( -iname "*.pm" -o -iname "*.pl" -o -iname "*.sh" -o -iname "*.py" -o -iname "*.bat" -o -iname "*.java" -o -iname "*.c" -o -iname "*.h" -o -iname "*.json*" -o -iname "*.yml" -o -iname "*.yaml" -o -iname "*.txt" -o -iname "*.md" -o -iname ".*rc*" -o -iname "*conf*" -o -iname "*profile*" -o -iname "*.local*" -o -iname "*.ini" -o -iname "*.cfg" -o -iname "Dockerfile" -o -iname "Makefile" -o -iname "requirements.txt" -o -iname "Readme.md" \) | egrep -v "$FILE_EXCLUSIONS" | sort -f | sed 's/^.\///')
+    FILES_LIST=$(find . -maxdepth 2 \( $TYPES_OF_FILES \) \( -iname "*.pm" -o -iname "*.pl" -o -iname "*.sh" -o -iname "*.py" -o -iname "*.bat" -o -iname "*.java" -o -iname "*.c" -o -iname "*.h" -o -iname "*.json*" -o -iname "*.yml" -o -iname "*.yaml" -o -iname "*.txt" -o -iname "*.md" -o -iname ".*rc*" -o -iname "*conf*" -o -iname "*profile*" -o -iname "*.local*" -o -iname "*.ini" -o -iname "*.cfg" -o -iname "Dockerfile" -o -iname "Makefile" -o -iname "requirements.txt" -o -iname "Readme.md" \) | grep -E -v "$FILE_EXCLUSIONS" | sort -f | sed 's/^.\///')
   fi
 }
 
@@ -92,13 +92,13 @@ function check_sshpass() {
     }
 
     # linux
-    if ! egrep -q '^/usr/bin/sshpass$' <<<$WHERE; then
+    if ! grep -E -q '^/usr/bin/sshpass$' <<<$WHERE; then
       echo "--FATAL: not allowing sshpass << $WHERE >> to be in this path on $OSTYPE!" >&2
       exit 9
     fi
   else
     # darwin
-    if ! egrep -q '^/usr/local/bin/sshpass$' <<<$WHERE; then
+    if ! grep -E -q '^/usr/local/bin/sshpass$' <<<$WHERE; then
       echo "--FATAL: not allowing sshpass << $WHERE >> to be in this path on $OSTYPE!" >&2
       exit 9
     fi
@@ -219,7 +219,7 @@ function do_backup() {
 
   # add any other exclusions
   if [ -n "$TAR_EXCLUSIONS" ]; then
-    find $LOCAL_SCRIPTS_DIR -type f | egrep "$TAR_EXCLUSIONS" >>/tmp/exclude-patterns-$$.tmp
+    find $LOCAL_SCRIPTS_DIR -type f | grep -E "$TAR_EXCLUSIONS" >>/tmp/exclude-patterns-$$.tmp
   fi
 
   ############################################################################################################################
@@ -318,8 +318,8 @@ function do_backup() {
 
   # test archive & print out the files backed-up, other than tmp
   echo "- testing archive..."
-  #tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort
-  tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | egrep -v ' tmp-|/$' | sort | xargs dirname | sort -u | grep -v "^\.$"
+  #tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | grep -E -v ' tmp-|/$' | sort
+  tar tvfz "$SERVER_TARGET_PUBLIC_DIR/$TAR_BACKUP_NAME" | awk '{print $4,$NF}' | grep -E -v ' tmp-|/$' | sort | xargs dirname | sort -u | grep -v "^\.$"
 
   # ALSO copy this script itself to TARGET dir
   # -> as a `dl.sh' file
@@ -1068,7 +1068,7 @@ function link_strategic_scripts() {
       # what is the target dir?
       TARGET_DIR=$LOCAL_SCRIPTS_DIR
       if grep -q "Config-Files" <<<$a; then
-        if egrep -q 'conf|rc|profile' <<<$a; then
+        if grep -E -q 'conf|rc|profile' <<<$a; then
           TARGET_DIR=$HOME
         fi
       fi
@@ -1096,7 +1096,7 @@ function link_strategic_scripts() {
         }
 
         # add +x if not there
-        if egrep -q 'sh$|pl$|py$|cgi$' <<<$a; then
+        if grep -E -q 'sh$|pl$|py$|cgi$' <<<$a; then
           chmod -f +x "$TARGET_DIR/$(basename $a)"
         fi
       fi
@@ -1166,7 +1166,7 @@ function do_add_files() {
         }
 
         # add +x if not there
-        if egrep -q 'sh$|pl$|py$|cgi$' <<<$a; then
+        if grep -E -q 'sh$|pl$|py$|cgi$' <<<$a; then
           chmod -f +x "$LAST/$(basename $a)"
         fi
       fi
@@ -1416,7 +1416,7 @@ function do_setup() {
     [ -z "$TZ" ] && TZ=$(ls -l /etc/localtime 2>/dev/null | grep zoneinfo | sed 's/.*zoneinfo\/\(.*\)$/\1/')
     if [ "$EUID" -eq 0 ] || command -v sudo >&/dev/null; then
       if [ -n "$TZ" ]; then
-        if egrep -q "$FAVE_TIMEZONE" <<<$TZ; then
+        if grep -E -q "$FAVE_TIMEZONE" <<<$TZ; then
           echo "... timezone set to: $FAVE_TIMEZONE" >&/dev/null
         else
           TZ_CHANGE_NEEDED=1
@@ -1443,7 +1443,7 @@ function do_setup() {
     fi
 
     # DYNAMIC DNS
-    if egrep -q "^gcp-|^ec2-|^az-|^cs-.*default" <<<$HOST; then
+    if grep -E -q "^gcp-|^ec2-|^az-|^cs-.*default" <<<$HOST; then
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-aws-gcp.sh -dyn_dns   [can be done automatically via setup-aws-gcp.sh]"
     elif [ -n "$DEVSHELL_SERVER_URL" -o -n "$DEVSHELL_SERVER_BASE_URL" ]; then
       echo "$ .$SRC_PREFIX/Shell-Tools/setup-aws-gcp.sh -dyn_dns"
@@ -1495,7 +1495,7 @@ elif [ "$1" = "-diff_scripts" -o "$1" = "-diff-scripts" -o "$1" = "-diff_src" ];
 elif [ "$1" = "-link_scripts" -o "$1" = "-link-scripts" -o "$1" = "-link_src" -o "$1" = "-link" -o "$1" = "-link-script" -o "$1" = "-link_script" ]; then
   link_strategic_scripts $2
 elif [ $# -eq 0 ]; then
-  if egrep -q 'dl.sh|k-dl-sh|kw-dl-sh' <<<$0; then
+  if grep -E -q 'dl.sh|k-dl-sh|kw-dl-sh' <<<$0; then
     echo "<--> assuming: $0 -setup [via dl.sh]" >&2
     do_setup
   elif [ -L "$0" -a "$PWD" = "$HOME" -a ! -e ./src/Config-Files -a ! -e ./src/Shell-Tools ]; then
